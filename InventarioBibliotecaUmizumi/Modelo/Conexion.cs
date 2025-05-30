@@ -13,6 +13,7 @@ namespace InventarioBibliotecaUmizumi.Modelo
        
         private static string cadenaConexion = "Server=PC-HUGO\\SQLEXPRESS;Database=bd_inventario;User Id=laraveluser;Password=Laravel2025$;";
 
+
         // Método para obtener la conexión
         public static SqlConnection ObtenerConexion()
         {
