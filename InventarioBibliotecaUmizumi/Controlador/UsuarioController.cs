@@ -73,6 +73,23 @@ namespace InventarioBibliotecaUmizumi.Controlador
                 return false;
             }
         }
+        public static int ObtenerIdSiLoginValido(string usuario, string password)
+        {
+            using (SqlConnection conexion = Conexion.ObtenerConexion())
+            {
+                string query = "SELECT IdUsuario FROM Usuarios WHERE usuario = @usuario AND dbo.validar_login(@usuario, @password) = 1";
+
+                using (SqlCommand comando = new SqlCommand(query, conexion))
+                {
+                    comando.Parameters.AddWithValue("@usuario", usuario);
+                    comando.Parameters.AddWithValue("@password", password);
+
+                    object result = comando.ExecuteScalar();
+                    return result != null ? Convert.ToInt32(result) : 0;
+                }
+            }
+        }
+
 
     }
 }

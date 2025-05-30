@@ -46,6 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controlador\SessionController.cs" />
     <Compile Include="Controlador\UsuarioController.cs" />
     <Compile Include="Vistas\Autenticacion\FormLogin.cs">
       <SubType>Form</SubType>

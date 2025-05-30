@@ -17,6 +17,7 @@ namespace InventarioBibliotecaUmizumi.Vistas.Autenticacion
         public FormRegistro()
         {
             InitializeComponent();
+            this.StartPosition = FormStartPosition.CenterScreen;
         }
 
         private void LinkRegistrar_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)

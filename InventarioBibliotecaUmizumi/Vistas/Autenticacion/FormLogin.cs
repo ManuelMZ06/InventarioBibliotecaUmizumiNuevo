@@ -13,7 +13,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-
 namespace InventarioBibliotecaUmizumi
 {
     public partial class FormLogin : Form
@@ -21,6 +20,7 @@ namespace InventarioBibliotecaUmizumi
         public FormLogin()
         {
             InitializeComponent();
+            this.StartPosition = FormStartPosition.CenterScreen;
         }
 
         private void LinkRegistrar_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
@@ -47,11 +47,24 @@ namespace InventarioBibliotecaUmizumi
             {
                 MessageBox.Show("✅ Bienvenido, acceso concedido.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-                // TODO: Redireccionar al Dashboard o formulario principal
-                this.Hide();
-                Dashboard tableroPrincipal = new Dashboard();
-                tableroPrincipal.ShowDialog();
-               
+                // Obtener el ID del usuario
+                int idUsuario = UsuarioController.ObtenerIdSiLoginValido(usuario, password);
+
+                if (idUsuario > 0)
+                {
+                    // Registrar inicio en la bitácora a través del trigger
+                    SesionController.RegistrarInicioSesion(idUsuario);
+
+                    // Redireccionar al dashboard
+                    this.Hide();
+                    Dashboard tableroPrincipal = new Dashboard(idUsuario); // Se pasa el ID del usuario al Dashboard
+                    tableroPrincipal.ShowDialog();
+                    this.Close();
+                }
+                else
+                {
+                    MessageBox.Show("Error inesperado al recuperar el ID del usuario.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
             else
             {
