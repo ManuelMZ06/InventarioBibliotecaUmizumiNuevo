@@ -1,0 +1,14 @@
+-- Selecciona la base de datos correcta
+USE bd_inventario;
+GO
+
+-- Crear el usuario dentro de la base de datos si no existe
+IF NOT EXISTS (SELECT * FROM sys.database_principals WHERE name = 'laraveluser')
+BEGIN
+    CREATE USER laraveluser FOR LOGIN laraveluser;
+END
+GO
+
+-- Darle permisos
+ALTER ROLE db_owner ADD MEMBER laraveluser;
+GO

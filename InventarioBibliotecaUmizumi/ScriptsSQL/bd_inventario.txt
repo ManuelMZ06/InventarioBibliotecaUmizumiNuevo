@@ -1,0 +1,128 @@
+-- Borrar la base de datos si ya existe
+IF EXISTS (SELECT name FROM sys.databases WHERE name = 'bd_inventario')
+BEGIN
+    ALTER DATABASE bd_inventario SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
+    DROP DATABASE bd_inventario;
+END;
+GO
+
+-- Crear base de datos
+CREATE DATABASE bd_inventario;
+GO
+
+USE bd_inventario;
+GO
+
+-- Tabla Roles
+CREATE TABLE Roles (
+    IdRol INT PRIMARY KEY IDENTITY(1,1),
+    NombreRol VARCHAR(50) NOT NULL,
+    status BIT DEFAULT 1,
+    created_at DATETIME DEFAULT GETDATE(),
+    updated_at DATETIME DEFAULT GETDATE()
+);
+
+-- Tabla Usuarios
+CREATE TABLE Usuarios (
+    IdUsuario INT PRIMARY KEY IDENTITY(1,1),
+    usuario VARCHAR(100) NOT NULL UNIQUE,
+    password VARBINARY(8000) NOT NULL,
+    idRol INT NOT NULL,
+    status BIT DEFAULT 1,
+    created_at DATETIME DEFAULT GETDATE(),
+    updated_at DATETIME DEFAULT GETDATE(),
+    FOREIGN KEY (idRol) REFERENCES Roles(IdRol)
+);
+
+-- Tabla Categorias
+CREATE TABLE Categorias (
+    IdCategoria INT PRIMARY KEY IDENTITY(1,1),
+    NombreCategoria VARCHAR(100),
+    status BIT DEFAULT 1,
+    created_at DATETIME DEFAULT GETDATE(),
+    updated_at DATETIME DEFAULT GETDATE()
+);
+
+-- Tabla Autores
+CREATE TABLE Autores (
+    IdAutor INT PRIMARY KEY IDENTITY(1,1),
+    NombreAutor VARCHAR(100),
+    status BIT DEFAULT 1,
+    created_at DATETIME DEFAULT GETDATE(),
+    updated_at DATETIME DEFAULT GETDATE()
+);
+
+-- Tabla Libros
+CREATE TABLE Libros (
+    IdLibro INT PRIMARY KEY IDENTITY(1,1),
+    Titulo VARCHAR(150),
+    IdCategoria INT,
+    IdAutor INT,
+	Cantidad_Stock INT,
+    PrecioCompra DECIMAL(10,2),
+    PrecioVenta DECIMAL(10,2),
+    Descripcion TEXT,
+    status BIT DEFAULT 1,
+    created_at DATETIME DEFAULT GETDATE(),
+    updated_at DATETIME DEFAULT GETDATE(),
+    FOREIGN KEY (IdCategoria) REFERENCES Categorias(IdCategoria),
+    FOREIGN KEY (IdAutor) REFERENCES Autores(IdAutor)
+);
+
+-- Tabla Proveedores
+CREATE TABLE Proveedores (
+    IdProveedor INT PRIMARY KEY IDENTITY(1,1),
+    NombreProveedor VARCHAR(100),
+    Telefono VARCHAR(20),
+    Email VARCHAR(100),
+	Direccion VARCHAR(100),
+    status BIT DEFAULT 1,
+    created_at DATETIME DEFAULT GETDATE(),
+    updated_at DATETIME DEFAULT GETDATE()
+);
+
+-- Tabla Bitacora
+CREATE TABLE BitacoraAccionesUsuario (
+    IdBitacora INT PRIMARY KEY IDENTITY(1,1),
+    IdUsuario INT,
+    Accion VARCHAR(100),
+    TablaAfectada VARCHAR(100),
+    FechaAccion DATETIME DEFAULT GETDATE(),   
+    status BIT DEFAULT 1,
+    created_at DATETIME DEFAULT GETDATE(),
+    updated_at DATETIME DEFAULT GETDATE(),
+    FOREIGN KEY (IdUsuario) REFERENCES Usuarios(IdUsuario)
+);
+
+--Crear bitacora de sesiones (Iniciar y cerrar sesion)
+CREATE TABLE BitacoraSesiones (
+    IdSesion INT PRIMARY KEY IDENTITY(1,1),
+    IdUsuario INT,
+    FechaInicio DATETIME DEFAULT GETDATE(),
+    FechaCierre DATETIME,
+    status BIT DEFAULT 1,
+    FOREIGN KEY (IdUsuario) REFERENCES Usuarios(IdUsuario)
+);
+
+
+CREATE TABLE Movimientos (
+    IdMovimiento INT PRIMARY KEY IDENTITY(1,1),
+    IdLibro INT NOT NULL,
+    TipoMovimiento VARCHAR(50) NOT NULL, -- 'Entrada', 'Salida', 'Venta', 'Devolución', etc.
+    Cantidad INT NOT NULL,
+    FechaMovimiento DATETIME DEFAULT GETDATE(),
+    IdUsuario INT,
+    Observaciones TEXT,
+    status BIT DEFAULT 1,
+    created_at DATETIME DEFAULT GETDATE(),
+    updated_at DATETIME DEFAULT GETDATE(),
+    FOREIGN KEY (IdLibro) REFERENCES Libros(IdLibro),
+    FOREIGN KEY (IdUsuario) REFERENCES Usuarios(IdUsuario)
+);
+
+
+-- Crear tabla temporal para disparar el trigger
+CREATE TABLE SesionTemporal (
+    IdUsuario INT,
+    TipoAccion VARCHAR(10)  -- 'Inicio' o 'Cierre'
+);

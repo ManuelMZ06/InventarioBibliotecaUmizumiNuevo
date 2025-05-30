@@ -93,3 +93,33 @@ BEGIN
     VALUES ('Empleado', 1, GETDATE(), GETDATE());
 END
 GO
+
+-- Crear un trigger llamado 'tr_sesion_bitacora' que se activa después de insertar en la tabla SesionTemporal
+CREATE TRIGGER tr_sesion_bitacora
+ON SesionTemporal
+AFTER INSERT
+AS
+BEGIN
+    -- Evita que se devuelvan recuentos innecesarios de filas afectadas
+    SET NOCOUNT ON;
+
+    -- Declaramos dos variables para capturar los datos del insert
+    DECLARE @IdUsuario INT, @TipoAccion VARCHAR(10)
+
+    -- Asignamos los valores del primer registro insertado (normalmente será uno a la vez)
+    SELECT TOP 1 @IdUsuario = IdUsuario, @TipoAccion = TipoAccion FROM inserted;
+
+    -- Si la acción es 'Inicio', se registra una nueva sesión en BitacoraSesiones
+    IF @TipoAccion = 'Inicio'
+    BEGIN
+        INSERT INTO BitacoraSesiones (IdUsuario)
+        VALUES (@IdUsuario);  -- FechaInicio se pone por defecto con GETDATE()
+    END
+    -- Si la acción es 'Cierre', se actualiza la sesión activa del usuario (la que no tenga FechaCierre)
+    ELSE IF @TipoAccion = 'Cierre'
+    BEGIN
+        UPDATE BitacoraSesiones
+        SET FechaCierre = GETDATE()  -- Se registra el cierre con la hora actual
+        WHERE IdUsuario = @IdUsuario AND FechaCierre IS NULL; -- Solo la sesión sin cerrar
+    END
+END;
