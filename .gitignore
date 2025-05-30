@@ -1,2 +1,61 @@
-.vs/ 
-.vs/ 
+# Ignore build results
+[Bb]in/
+[Oo]bj/
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Visual Studio Code settings
+.vscode/
+
+# Windows image file caches
+Thumbs.db
+ehthumbs.db
+
+# Office temp files
+~$*
+
+# ASP.NET temp files
+*.Publish.xml
+
+# Rider files
+.idea/
+
+# VS backup files
+*.bak
+
+# ReSharper files
+_ReSharper*/
+*.DotSettings.user
+
+# NuGet
+*.nupkg
+packages/
+.nuget/
+
+# Logs
+*.log
+
+# Build results
+*.exe
+*.dll
+*.pdb
+
+# Test results
+*.trx
+
+# VS generated folders
+.vs/
+
+# Git merge conflict files
+*.orig
+
+# Environment-specific
+.env
+*.db
+*.sqlite
+*.mdf
+*.ldf
